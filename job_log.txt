@@ -1,0 +1,3 @@
+[2025-10-17 02:04:55] Job Started: Data Validation
+[2025-10-17 02:04:55] WARNING: USPCID 'AIRRA00003',USCLID 'AIRRA00003' number '21557 is not a mobile number.'
+[2025-10-17 02:04:55] Job Finished.

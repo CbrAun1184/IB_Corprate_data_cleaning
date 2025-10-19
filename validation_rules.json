@@ -1,0 +1,31 @@
+{
+  "USPCID": {
+      "type": "varchar",
+      "max_length": 10,
+      "required": true
+  },
+  "USCLID": {
+      "type": "varchar",
+      "max_length": 10,
+      "required": true
+  },
+  "email_add": {
+      "type": "email",
+      "required": true
+  },
+  "Mobile": {
+     "type": "digit",
+     "max_length":10
+  },
+  "Acc_no": {
+      "type": "digit",
+      "max_length": 10
+  },
+  "DOB": {
+     "type": "date",
+     "format": "DD/MM/YYYY",
+     "required": true
+  }
+
+
+}
