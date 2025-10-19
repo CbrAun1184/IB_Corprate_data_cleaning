@@ -1,4 +1,3 @@
-from csv import excel
 import pandas as pd
 
 def perform_xlookup_equivalent(file_path):
@@ -59,7 +58,7 @@ def perform_xlookup_equivalent(file_path):
         print(f"✅ Success! Data has been merged and saved to: {output_file}")
 
     except FileNotFoundError:
-        print(f"❌ Error: The file at path '{file_path}' was not found)
+        print(f"❌ Error: The file at path '{file_path}' was not found")
     except ValueError as e:
         print(f"❌ Error reading sheets. Check if the sheet names 'IBUSRQDC1__sm' and 'Sheet1' are correct.")
         print(f"Details: {e}")
@@ -71,7 +70,3 @@ excel_file_path = 'your_excel_file.xlsx'
 
 # Call the function to run the process
 perform_xlookup_equivalent(excel_file_path)
-
-
-
-
