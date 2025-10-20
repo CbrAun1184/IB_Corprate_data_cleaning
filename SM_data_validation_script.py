@@ -157,17 +157,28 @@ def main():
                     # Format as an Excel formula to force text interpretation and preserve leading zeros
                 #    row_data['Acc_no'] = f'="{padded_acc_no}"'
 
-                    # 6. Date of Birth (DOB) Validation and Formatting
-                    dob_str = row_data.get('DOB', '').strip()
-                    if not dob_str:
-                        error_description.append("missing date of birth")
-                    else:
+                # 6. Date of Birth (DOB) Validation and Formatting
+                dob_str = row_data.get('DOB', '').strip()
+                original_dob_str = dob_str
+                if not dob_str:
+                    error_description.append("missing date of birth")
+                else:
+                    dob_obj = None
+                    # Try parsing different date formats, including with 2-digit year
+                    for fmt in ['%d/%m/%Y', '%d/%m/%y']:
                         try:
-                            # Attempt to parse and reformat to ensure correctness
-                            dob_obj = datetime.strptime(dob_str, '%d/%m/%Y')
-                            row_data['DOB'] = dob_obj.strftime('%d/%m/%Y')
+                            dob_obj = datetime.strptime(dob_str, fmt)
+                            break
                         except ValueError:
-                            error_description.append("invalid date of birth format")
+                            pass
+
+                    if dob_obj:
+                        formatted_dob = dob_obj.strftime('%d/%m/%Y')
+                        if formatted_dob != original_dob_str:
+                            log_message(log, f"INFO: USPCID '{log_uspcid}', USCLID '{log_usclid}' DOB changed from '{original_dob_str}' to '{formatted_dob}'.")
+                        row_data['DOB'] = formatted_dob
+                    else:
+                        error_description.append(f"invalid date of birth format: {original_dob_str}")
 
                 # --- Write to appropriate file ---
                 if error_description:

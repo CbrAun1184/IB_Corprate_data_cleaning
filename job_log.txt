@@ -1,6 +1,10 @@
-[2025-10-20 21:28:23] Job Started: Data Validation
-[2025-10-20 21:28:23] WARNING: USPCID 'AIRRA00003', USCLID 'TUAVL00003' has a mobile number '7588887' outside expected ranges.
-[2025-10-20 21:28:23] WARNING: USPCID 'AIRRA00003', USCLID 'LUKEA00002' has a mobile number '7571766' outside expected ranges.
-[2025-10-20 21:28:23] INFO: USPCID 'AIRRA00003', USCLID 'PAPEK00004' mobile_no changed from '6857518567' to '7518567'.
-[2025-10-20 21:28:23] WARNING: USPCID 'AIRRA00003', USCLID 'PAPEK00004' has a mobile number '7518567' outside expected ranges.
-[2025-10-20 21:28:23] Job Finished.
+[2025-10-20 23:03:47] Job Started: Data Validation
+[2025-10-20 23:03:47] INFO: USPCID 'AIRRA00003', USCLID 'NAIDA00005' mobile_no changed from '+685 7701859' to '7701859'.
+[2025-10-20 23:03:47] WARNING: USPCID 'AIRRA00003', USCLID 'NAIDA00005' has a mobile number '7701859' outside expected ranges.
+[2025-10-20 23:03:47] WARNING: USPCID '', USCLID 'TUAVL00003' has a mobile number '7588887' outside expected ranges.
+[2025-10-20 23:03:47] WARNING: USPCID 'AIRRA—00003', USCLID 'LUKEA00002' has a mobile number '7571766' outside expected ranges.
+[2025-10-20 23:03:47] INFO: USPCID 'AIRRA—00003', USCLID 'LUKEA00002' DOB changed from '8/2/1999' to '08/02/1999'.
+[2025-10-20 23:03:47] INFO: USPCID 'AIRRA00003', USCLID 'PAPEK00004' mobile_no changed from '6857518567' to '7518567'.
+[2025-10-20 23:03:47] WARNING: USPCID 'AIRRA00003', USCLID 'PAPEK00004' has a mobile number '7518567' outside expected ranges.
+[2025-10-20 23:03:47] INFO: USPCID 'AIRRA00003', USCLID 'PAPEK00004' DOB changed from '1/02/1999' to '01/02/1999'.
+[2025-10-20 23:03:47] Job Finished.
