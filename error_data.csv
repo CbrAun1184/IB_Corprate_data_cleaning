@@ -1,3 +1,2 @@
 USPCID,USCLID,email_add,Mobile_No,AC_NO,DOB,error_desc
-AIRRA00003,NAIDA00005,anand.naidu@airraro.com,5051,1000100750,08/06/1972,invalid mobile number format: 5051
-AIRRA00003,LUKEA00002,autiare.luke@airraro,21557,1000100750,15/12/1969,invalid email address
+AIRRA00003,NAIDA00005,autiare.luke@airraro.com,+675 7701859,1000100750,10/11/1960,invalid mobile number format: +675 7701859

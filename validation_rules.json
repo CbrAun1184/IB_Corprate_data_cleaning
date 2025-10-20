@@ -24,7 +24,7 @@
   "DOB": {
      "type": "date",
      "format": "DD/MM/YYYY",
-     "required": true
+     "required": false
   }
 
 

@@ -2,7 +2,7 @@ import csv
 import json
 import re
 from datetime import datetime
-from importlib.metadata import requires
+
 
 def validate_email(email):
     """
@@ -35,7 +35,7 @@ def main():
         print("Error: validation rules.json not found")
         return
 
-    input_csv_file = 'SAM_IBUSR_Customer Email and Phone Number_DataCleansing.csv'
+    input_csv_file = 'Corprate_data_dummy.csv'
     clean_data_csv = 'clean_data.csv'
     error_data_csv = 'error_data.csv'
     job_log_file = 'job_log.txt'
@@ -72,6 +72,15 @@ def main():
                     log_message(log, f"ERROR: Row{i} has incorrect number of columns. Skipping")
                     continue
 
+                # --- Pre-validation Checks ---
+                # Email is a unique ID. If it's missing, fail the whole row immediately.
+                email = row_data.get('email_add', '').strip()
+                if rules['email_add']['required'] and not email:
+                    original_row_values = [row_data.get(h, '') for h in processed_header]
+                    error_writer.writerow(original_row_values + ["missing email address"])
+                    log_message(log, f"ERROR: Row {i} with USPCID '{row_data.get('USPCID')}' moved to error file due to missing email address.")
+                    continue
+
                 # Define stable identifiers for logging, in case the row is malformed
                 log_uspcid = row_data.get('USPCID', '[MISSING USPCID]')
                 log_usclid = row_data.get('USCLID', '[MISSING USCLID]')
@@ -94,11 +103,8 @@ def main():
                 elif usclid and not usclid.isalnum():
                     error_description.append("USCLID contains special characters")
 
-                # 3. Email Validation
-                email = row_data.get('email_add', '').strip()
-                if rules['email_add']['required'] and not email:
-                    error_description.append("missing email address")
-                elif email and not validate_email(email):
+                # 3. Email Validation (format)
+                if email and not validate_email(email):
                     error_description.append("invalid email address")
 
                 # 4 Mobile Number Validation and Cleaning
@@ -113,23 +119,23 @@ def main():
 
                     if mobile != original_mobile:
                         log_message(log,
-                                    f"INFO: USPCID '{uspcid}', USCLID '{usclid}' mobile_no changed from '{original_mobile}' to '{mobile}'.")
+                                    f"INFO: USPCID '{log_uspcid}', USCLID '{log_usclid}' mobile_no changed from '{original_mobile}' to '{mobile}'.")
                         row_data['Mobile_no'] = mobile
 
                     if mobile == '0':
-                        log_message(log, f"WARNING: USPCID '{uspcid}', USCLID '{usclid}' has a mobile number of '0'.")
+                        log_message(log, f"WARNING: USPCID '{log_uspcid}', USCLID '{log_usclid}' has a mobile number of '0'.")
                     elif not mobile.isdigit() or len(mobile) != 7:
                         error_description.append(f"invalid mobile number format: {original_mobile}")
                     else:
                         first_digit = mobile[0]
                         if first_digit in ['2', '3', '4','5','6','800']:
                             log_message(log,
-                                        f"WARNING: USPCID '{uspcid}', USCLID '{usclid}' number '{mobile}' is not a mobile number.")
+                                        f"WARNING: USPCID '{log_uspcid}', USCLID '{log_usclid}' number '{mobile}' is not a mobile number.")
                         elif first_digit not in ['9', '3']:
                             log_message(log,
-                                        f"WARNING: USPCID '{uspcid}', USCLID '{usclid}' has a mobile number '{mobile}' outside expected ranges.")
+                                        f"WARNING: USPCID '{log_uspcid}', USCLID '{log_usclid}' has a mobile number '{mobile}' outside expected ranges.")
                 else:
-                    log_message(log, f"INFO: USPCID {uspcid} and USCLID {usclid} has No mobile number")
+                    log_message(log, f"INFO: USPCID {log_uspcid} and USCLID {log_usclid} has No mobile number")
 
                 # 5 Account Number Validation and cleaning
                 #acc_no = row_data.get('Acc_no', '').strip()
@@ -165,7 +171,6 @@ def main():
 
                 # --- Write to appropriate file ---
                 if error_description:
-                    error_row = list(row_data.values())
                     # Ensure the row has the same number of columns as the original header
                     original_row_values = [row_data.get(h,'') for h in processed_header]
                     error_writer.writerow(original_row_values + [",".join(error_description)])

@@ -1,3 +1,6 @@
-[2025-10-17 02:04:55] Job Started: Data Validation
-[2025-10-17 02:04:55] WARNING: USPCID 'AIRRA00003',USCLID 'AIRRA00003' number '21557 is not a mobile number.'
-[2025-10-17 02:04:55] Job Finished.
+[2025-10-20 21:28:23] Job Started: Data Validation
+[2025-10-20 21:28:23] WARNING: USPCID 'AIRRA00003', USCLID 'TUAVL00003' has a mobile number '7588887' outside expected ranges.
+[2025-10-20 21:28:23] WARNING: USPCID 'AIRRA00003', USCLID 'LUKEA00002' has a mobile number '7571766' outside expected ranges.
+[2025-10-20 21:28:23] INFO: USPCID 'AIRRA00003', USCLID 'PAPEK00004' mobile_no changed from '6857518567' to '7518567'.
+[2025-10-20 21:28:23] WARNING: USPCID 'AIRRA00003', USCLID 'PAPEK00004' has a mobile number '7518567' outside expected ranges.
+[2025-10-20 21:28:23] Job Finished.
