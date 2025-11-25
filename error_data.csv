@@ -1,4 +1,5 @@
 USPCID,USCLID,email_add,Mobile_No,AC_NO,DOB,error_desc
-AIRRA00003,NAIDA00005,autiare.luke@airraro.com,7701859,1000100750,,missing date of birth
-,TUAVL00003,autiare.luke@airraro.com,7588887,1000100750,10/11/1960,missing USPCID
-AIRRA—00003,LUKEA00002,autiare.luke@airraro.com,7571766,1000100750,08/02/1999,USPCID contains special characters
+AIRRA00003,NAIDA00005,autiare.luke@airraro.com,+685 7701859,1000100750,,invalid mobile number format: +685 7701859
+,TUAVL00003,autiare.luke@airraro.com,7588887,1000100750,10/11/1960,"missing USPCID,invalid mobile number format: 7588887"
+AIRRA—00003,LUKEA00002,autiare.luke@airraro.com,7571766,1000100750,8/2/1999,invalid mobile number format: 7571766
+AIRRA00003,PAPEK00004,autiare.luke@airraro.com,6857518567,1000100750,1/02/1999,invalid mobile number format: 6857518567
