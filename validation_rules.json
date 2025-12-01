@@ -15,7 +15,7 @@
   },
   "Mobile": {
      "type": "digit",
-     "max_length":10
+     "max_length":7
   },
   "Acc_no": {
       "type": "digit",
@@ -24,7 +24,7 @@
   "DOB": {
      "type": "date",
      "format": "DD/MM/YYYY",
-     "required": false
+     "required": true
   }
 
 

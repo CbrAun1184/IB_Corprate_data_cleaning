@@ -4,14 +4,20 @@ import re
 import logging
 from datetime import datetime
 
-# Configure logging
-logging.basicConfig(
-    filename='job_log.txt',
-    level=logging.INFO,
-    format='[%(asctime)s] %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S',
-    filemode='w'
-)
+def configure_logging():
+    """
+    Configures logging to a file with a timestamp.
+    """
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    log_filename = f'job_log_{timestamp}.txt'
+    logging.basicConfig(
+        filename=log_filename,
+        level=logging.INFO,
+        format='[%(asctime)s] %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S',
+        filemode='w'
+    )
+    return log_filename
 
 def validate_email(email):
     """
@@ -28,6 +34,9 @@ def main():
     Main function to validate the CSV data
     :return:
     """
+    log_filename = configure_logging()
+    print(f"Logging to {log_filename}")
+
     try:
         with open('validation_rules.json', 'r') as f:
             rules = json.load(f)
@@ -40,9 +49,10 @@ def main():
         logging.error(f"validation rules.json is not valid JSON. {e}")
         return
 
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     input_csv_file = 'Corprate_data_dummy.csv'
-    clean_data_csv = 'clean_data.csv'
-    error_data_csv = 'error_data.csv'
+    clean_data_csv = f'clean_data_{timestamp}.csv'
+    error_data_csv = f'error_data_{timestamp}.csv'
 
     try:
         with open(input_csv_file, 'r', newline='') as infile, \
@@ -111,39 +121,21 @@ def main():
                 mobile = row_data.get('Mobile_no', '').strip()
                 original_mobile = mobile
 
-                # Check rules for Mobile (using 'Mobile' key from json if 'Mobile_no' not present, or fallback)
-                # The script uses 'Mobile_no' as key in row_data, but json has 'Mobile'.
-                # We will proceed with the existing logic logic but improve it.
-
                 if mobile:
                     # Remove country code prefixes
                     if mobile.startswith('+682'):
                         mobile = mobile[4:].strip()
                     elif mobile.startswith('682'):
                         mobile = mobile[3:].strip()
-                    # Added handling for +685 (Samoa) if appropriate?
-                    # The original script logged warnings for "outside expected ranges".
-                    # Assuming we want to clean +685 as well if it follows similar pattern?
-                    # For now, I will stick to what was there but clean up the code.
 
                     if mobile != original_mobile:
                         logging.info(f"USPCID '{uspcid}', USCLID '{usclid}' mobile_no changed from '{original_mobile}' to '{mobile}'.")
                         row_data['Mobile_no'] = mobile
 
-                    # Validation logic from original script:
-                    # "if not mobile.isdigit() or len(mobile) != 5:"
-                    # This implies it expects 5 digit local numbers.
-
                     if not mobile.isdigit():
-                         error_description.append(f"invalid mobile number format: {original_mobile}")
-                    elif len(mobile) != 5:
-                         # Check if it was a valid number but just different length/country
-                         # If it started with +685 (Samoa), it might be valid but not "local 5 digit".
-                         # The prompt asks to "fix".
-                         # If I look at the data: +685 7701859.
-                         # If we remove +685 -> 7701859 (7 digits).
-                         # 5 digits seems to be the rule for this specific system (maybe Cook Islands?).
-                         error_description.append(f"invalid mobile number format: {original_mobile}")
+                        logging.warning(f"USPCID '{uspcid}', USCLID '{usclid}' has an invalid mobile number format: {original_mobile}")
+                    elif len(mobile) != 7:
+                        logging.warning(f"USPCID '{uspcid}', USCLID '{usclid}' has an invalid mobile number format: {original_mobile}")
                     else:
                         first_digit = mobile[0]
                         if first_digit in ['2', '3', '4']:
@@ -158,8 +150,6 @@ def main():
                 original_acc_no = acc_no
 
                 if not acc_no:
-                    # Check if required? Rules say required is not explicitly set in JSON for Acc_no,
-                    # but code had error for it.
                     error_description.append("invalid account")
                 elif not acc_no.isdigit():
                     error_description.append("invalid account number format")
@@ -173,32 +163,32 @@ def main():
 
                 # 6 Date of Birth (DOB) validation and formatting
                 dob_str = row_data.get('DOB', '').strip()
-                if rules.get('DOB', {}).get('required') and not dob_str:
-                    error_description.append("invalid date of birth")
-                elif dob_str:
+                dob_rule = rules.get('DOB', {})
+                is_required = dob_rule.get('required', False)
+                date_format_str = dob_rule.get('format', 'DD/MM/YYYY').replace('DD', '%d').replace('MM', '%m').replace('YYYY', '%Y')
+
+                if not dob_str:
+                    if is_required:
+                        error_description.append("missing date of birth")
+                else:
                     try:
                         # Attempt to parse and reformat to ensure correctness
-                        dob_obj = datetime.strptime(dob_str, '%d/%m/%Y')
-                        row_data['DOB'] = dob_obj.strftime('%d/%m/%Y')
+                        dob_obj = datetime.strptime(dob_str, date_format_str)
+                        row_data['DOB'] = dob_obj.strftime(date_format_str)
                     except ValueError:
                         # Simple attempt to fix common issues, like wrong separators
                         try:
                             corrected_dob = dob_str.replace('-', '/').replace('.', '/')
-                            dob_obj = datetime.strptime(corrected_dob, '%d/%m/%Y')
-                            row_data['DOB'] = dob_obj.strftime('%d/%m/%Y')
+                            dob_obj = datetime.strptime(corrected_dob, date_format_str)
+                            row_data['DOB'] = dob_obj.strftime(date_format_str)
                             logging.info(f"USPCID '{uspcid}', USCLID '{usclid}' DOB '{dob_str}' was corrected to '{row_data['DOB']}'.")
                         except ValueError:
                             error_description.append("invalid date of birth")
 
                 # --- Write to appropriate file ---
                 if error_description:
-                    # Write the ORIGINAL values to error file, plus error description
-                    # We need to make sure we match the header order.
-                    # original_row_values came from 'reader', which matches 'header'.
                     error_writer.writerow(original_row_values + [",".join(error_description)])
                 else:
-                    # Write the cleaned row back in the original header order
-                    # row_data contains clean values (keys correspond to processed_header)
                     clean_row = [row_data.get(h, '') for h in processed_header]
                     clean_writer.writerow(clean_row)
 
